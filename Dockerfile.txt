@@ -1,0 +1,14 @@
+FROM php:7-fpm
+MAINTAINER QuirianCordova
+ENV REFRESHED_AT 2016-08-13
+RUN apt-get update && \
+     apt-get install --no-install-recommends --no-install-suggests -y vim less zlib1g-dev \
+     libxml2-dev libmcrypt-dev && \
+     rm -rf /var/lib/apt/lists/*
+ 
+# Instalamos algunas extensiones de PHP extras
+RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install opcache
+RUN docker-php-ext-install mcrypt
+HEALTCHECK
