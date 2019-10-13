@@ -1,9 +1,21 @@
-FROM ubuntu:16.04
-MAINTAINER QuirianCordova
-RUN apt-get update && apt-get -y upgrade
-RUN apt-get install -y mysql-server
-ADD my.cnf /etc/mysql/conf.d/my.cnf 
-ADD script.sh /usr/local/bin/script.sh
-RUN chmod +x /usr/local/bin/script.sh
-EXPOSE 3306
-CMD ["/usr/local/bin/script.sh"]
+FROM registry.fedoraproject.org/fedora:30
+LABEL maintainer="Quirian Cordova"
+
+# ANSIBLE_STDOUT_CALLBACK - nicer output from the playbook run
+ENV LANG=en_US.UTF-8 \
+    PYTHONDONTWRITEBYTECODE=yes \
+    WORKDIR=/src \
+    ANSIBLE_STDOUT_CALLBACK=debug
+
+
+RUN dnf install -y ansible && dnf clean all
+
+WORKDIR /src
+COPY . /src
+
+# install all packages
+RUN ansible-playbook -vv -c local -i localhost, files/install-packages.yaml \
+    && dnf clean all
+
+# install conu
+RUN pip3 install .
